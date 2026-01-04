@@ -6,13 +6,8 @@
 //
 
 import UIKit
+import SnapKit
 
-class MoviesViewController: CustomViewController {
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-
+class MoviesViewController: UIViewController {
 
 }
-
