@@ -7,6 +7,6 @@
 
 import Foundation
 
-struct WatchlistResponse {
+struct WatchlistResponse: Decodable {
     let results: [Movie]
 }

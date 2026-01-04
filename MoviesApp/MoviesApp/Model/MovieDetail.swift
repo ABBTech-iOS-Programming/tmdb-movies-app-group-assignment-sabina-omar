@@ -14,10 +14,18 @@ struct MovieDetail: Decodable {
     let overview: String
     let runtime: Int?
     let genres: [Genre]
-    let release_date: String?
-    let vote_average: Double
-    let poster_path: String?
-    let backdrop_path: String?
+    let releaseDate: String?
+    let voteAverage: Double
+    let posterPath: String?
+    let backdropPath: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, title, overview, runtime, genres
+        case releaseDate = "release_date"
+        case voteAverage = "vote_average"
+        case posterPath = "poster_path"
+        case backdropPath = "backdrop_path"
+    }
 }
 
 struct Genre: Decodable {

@@ -9,7 +9,14 @@
 struct Movie: Decodable {
     let id: Int
     let title: String
-    let poster_path: String?
-    let release_date: String?
-    let vote_average: Double
+    let posterPath: String?
+    let releaseDate: String?
+    let voteAverage: Double
+
+    enum CodingKeys: String, CodingKey {
+        case id, title
+        case posterPath = "poster_path"
+        case releaseDate = "release_date"
+        case voteAverage = "vote_average"
+    }
 }
