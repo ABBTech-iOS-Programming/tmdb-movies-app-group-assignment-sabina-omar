@@ -19,9 +19,9 @@ extension WatchlistEndpoints: Endpoint {
     var path: String {
         switch self {
         case .getWatchlist(let accountId):
-            return "/account/\(accountId)/watchlist/movies"
+            return "/3/account/\(accountId)/watchlist/movies"
         case .addToWatchlist(let accountId, _):
-            return "/account/\(accountId)/watchlist"
+            return "/3/account/\(accountId)/watchlist"
         }
     }
 

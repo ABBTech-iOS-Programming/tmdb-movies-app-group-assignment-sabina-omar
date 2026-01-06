@@ -18,8 +18,8 @@ extension MovieDetailEndpoints: Endpoint {
 
     var path: String {
         switch self {
-        case .detail(let id): return "/movie/\(id)"
-        case .reviews(let id): return "/movie/\(id)/reviews"
+        case .detail(let id): return "/3/movie/\(id)"
+        case .reviews(let id): return "/3/movie/\(id)/reviews"
         }
     }
 

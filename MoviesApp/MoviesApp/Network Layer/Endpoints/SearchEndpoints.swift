@@ -15,7 +15,7 @@ enum SearchEndpoints {
 extension SearchEndpoints: Endpoint {
     var baseURL: String { Constants.baseURL }
 
-    var path: String { "/search/movie" }
+    var path: String { "/3/search/movie" }
 
     var method: HttpMethod { .get }
 

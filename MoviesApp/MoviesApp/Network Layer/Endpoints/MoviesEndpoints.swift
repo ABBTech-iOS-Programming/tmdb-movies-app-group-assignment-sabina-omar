@@ -21,11 +21,11 @@ extension MoviesEndpoints: Endpoint {
 
     var path: String {
         switch self {
-        case .trending: return "/trending/movie/day"
-        case .nowPlaying: return "/movie/now_playing"
-        case .popular: return "/movie/popular"
-        case .upcoming: return "/movie/upcoming"
-        case .topRated: return "/movie/top_rated"
+        case .trending: return "/3/trending/movie/day"
+        case .nowPlaying: return "/3/movie/now_playing"
+        case .popular: return "/3/movie/popular"
+        case .upcoming: return "/3/movie/upcoming"
+        case .topRated: return "/3/movie/top_rated"
         }
     }
 
