@@ -7,5 +7,10 @@
 
 
 class MoviesBuilder {
-    
+    static func build() -> MoviesViewController {
+        let networkService: NetworkService = DefaultNetworkService()
+        let vm = MoviesViewModel(networkService: networkService)
+        let vc = MoviesViewController(viewModel: vm)
+        return vc
+    }
 }
