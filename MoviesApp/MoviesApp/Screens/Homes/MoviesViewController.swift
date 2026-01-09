@@ -19,7 +19,7 @@ class MoviesViewController: CustomViewController {
     
     private let headerLabel: UILabel = {
         let header = UILabel()
-        header.text = "What do you wnat to watch?"
+        header.text = "What do you want to watch?"
         header.font = .systemFont(ofSize: 18, weight: .semibold)
         header.textColor = .white
         return header
@@ -133,6 +133,11 @@ class MoviesViewController: CustomViewController {
         [headerLabel, trendingMoviesLabel, trendingMoviesList, categoriesView, selectedGenreMoviesList].forEach(view.addSubview)
     }
     
+    private func openDetails(movie: Movie) {
+        let detailVC = DetailBuilder.build()
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+    
     private func bindViewModel() {
         viewModel.onTrendingMoviesUpdated = { [weak self] in
             self?.trendingMoviesList.reloadData()
@@ -185,18 +190,32 @@ class MoviesViewController: CustomViewController {
 
 extension MoviesViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if collectionView.tag == 1 {
+
+        switch collectionView.tag {
+
+        case 0:
+            let movie = viewModel.trendingMovies[indexPath.row]
+            openDetails(movie: movie)
+
+        case 2:
+            let movie = viewModel.categoryMovies[indexPath.row]
+            openDetails(movie: movie)
+
+        case 1:
             let selectedCategory = viewModel.filterCategories[indexPath.row]
             viewModel.fetchMovies(selectedCategory)
+
+        default:
+            break
         }
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch collectionView.tag {
-        case 0: // Trending movies
+        case 0: =
             return viewModel.trendingMovies.count
-        case 1: // Categories
+        case 1:
             return viewModel.filterCategories.count
-        case 2: // Category movies
+        case 2: 
             return viewModel.categoryMovies.count
         default:
             return 0
