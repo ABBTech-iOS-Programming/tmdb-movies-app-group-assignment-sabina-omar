@@ -14,7 +14,7 @@ final class CategoriesMovieViewCell: UICollectionViewCell {
     private let categoryLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
-        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.font = UIFont(name: "Poppins-Regular", size: 14)
         return label
     }()
     

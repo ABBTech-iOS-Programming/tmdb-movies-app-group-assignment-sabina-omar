@@ -21,15 +21,44 @@ class MoviesViewController: CustomViewController {
     private let headerLabel: UILabel = {
         let header = UILabel()
         header.text = "What do you want to watch?"
-        header.font = .systemFont(ofSize: 18, weight: .semibold)
+        header.font = UIFont(name: "Poppins-SemiBold", size: 18)
         header.textColor = .white
         return header
+    }()
+    
+    private let searchBar: UIButton = {
+        let search = UIButton()
+        var config = UIButton.Configuration.plain()
+        config.title = "Search"
+        config.attributedTitle = AttributedString(
+            "Search",
+            attributes: AttributeContainer([
+                .foregroundColor: UIColor.white.withAlphaComponent(0.5),
+                .font: UIFont.systemFont(ofSize: 16)
+            ])
+        )
+        config.image = UIImage(systemName: "magnifyingglass")
+        config.imagePlacement = .trailing
+        config.imagePadding = 8
+        config.contentInsets = NSDirectionalEdgeInsets(
+                    top: 12,
+                    leading: 16,
+                    bottom: 12,
+                    trailing: 16
+                )
+        search.configuration = config
+        search.backgroundColor =  UIColor.white.withAlphaComponent(0.12)
+        search.layer.cornerRadius = 16
+        search.tintColor = UIColor.white.withAlphaComponent(0.6)
+        search.layer.borderColor = .none
+        search.contentHorizontalAlignment = .trailing
+        return search
     }()
     
     private let trendingMoviesLabel: UILabel = {
         let label = UILabel()
         label.text = "Trending"
-        label.font = .systemFont(ofSize: 20, weight: .semibold)
+        label.font = UIFont(name: "Poppins-SemiBold", size: 18)
         label.textColor = .white
         return label
     }()
@@ -47,6 +76,7 @@ class MoviesViewController: CustomViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.tag = 1
+        
         collectionView.backgroundColor = .background
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.register(CategoriesMovieViewCell.self, forCellWithReuseIdentifier: CategoriesMovieViewCell.reuseIdentifier)
@@ -108,7 +138,9 @@ class MoviesViewController: CustomViewController {
         setupUI()
         bindViewModel()
         loadInitialData()
+        searchBar.addTarget(self, action: #selector(searchbarTapped), for: .touchUpInside)
     }
+    
     
     private func loadInitialData() {
         viewModel.fetchTrendingMovies()
@@ -128,13 +160,20 @@ class MoviesViewController: CustomViewController {
     }
     
     private func addSubviews() {
-        [headerLabel, trendingMoviesLabel, trendingMoviesList, categoriesView, selectedGenreMoviesList, slidingIndicator].forEach(view.addSubview)
+        [searchBar,headerLabel, trendingMoviesLabel, trendingMoviesList, categoriesView, selectedGenreMoviesList, slidingIndicator].forEach(view.addSubview)
     }
+    
     
     private func openDetails(movie: Movie) {
         let detailVC = DetailBuilder.build(movieId: movie.id)
         detailVC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(detailVC, animated: true)
+    }
+    
+    @objc func searchbarTapped() {
+        let VC = SearchViewController()
+        
+        navigationController?.pushViewController(VC, animated: true)
     }
     
     private func bindViewModel() {
@@ -156,9 +195,15 @@ class MoviesViewController: CustomViewController {
             make.top.equalTo(view.safeAreaLayoutGuide)
             make.horizontalEdges.equalToSuperview().inset(22)
         }
+        
+        searchBar.snp.makeConstraints { make in
+            make.top.equalTo(headerLabel.snp.bottom).offset(24)
+            make.horizontalEdges.equalToSuperview().inset(22)
+            make.height.equalTo(50)
+        }
          
         trendingMoviesLabel.snp.makeConstraints { make in
-            make.top.equalTo(headerLabel.snp.bottom).offset(24)
+            make.top.equalTo(searchBar.snp.bottom).offset(24)
             make.horizontalEdges.equalToSuperview().inset(22)
         }
          
@@ -176,8 +221,8 @@ class MoviesViewController: CustomViewController {
          
         selectedGenreMoviesList.snp.makeConstraints { make in
             make.top.equalTo(categoriesView.snp.bottom).offset(24)
-            make.horizontalEdges.equalToSuperview()
-            make.bottom.equalTo(view)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
         
         slidingIndicator.snp.makeConstraints { make in
@@ -186,6 +231,7 @@ class MoviesViewController: CustomViewController {
             make.width.equalTo(0)
             make.centerX.equalTo(view.snp.leading)
         }
+        
     }
 
     private func moveIndicator(to indexPath: IndexPath) {
