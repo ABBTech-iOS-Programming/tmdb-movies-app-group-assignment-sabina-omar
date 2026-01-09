@@ -52,11 +52,6 @@ class MainTabBarController: UITabBarController {
         tabBar.backgroundImage = UIImage()
         tabBar.shadowImage = UIImage()
 
-        let line = UIView(frame: CGRect(x: 0, y: -10, width: tabBar.bounds.width, height: 0.5))
-        line.backgroundColor = UIColor(named: "selectedTabBar")
-        line.autoresizingMask = [.flexibleWidth, .flexibleBottomMargin]
-        tabBar.addSubview(line)
-
         tabBar.tintColor = UIColor(named: "selectedTabBar")
         tabBar.unselectedItemTintColor = UIColor(named: "unselectedTabBar")
     }

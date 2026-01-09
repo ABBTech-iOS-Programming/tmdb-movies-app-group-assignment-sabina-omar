@@ -7,6 +7,19 @@
 
 import UIKit
 
-class DetailBuilder {
-  
+import UIKit
+
+final class DetailBuilder {
+    static func build(movieId: Int) -> DetailViewController {
+        let networkService = DefaultNetworkService()
+        
+        let viewModel = DetailViewModel(movieId: movieId, networkService: networkService)
+        
+        let viewController = DetailViewController()
+        
+        viewController.viewModel = viewModel
+        
+        
+        return viewController
+    }
 }

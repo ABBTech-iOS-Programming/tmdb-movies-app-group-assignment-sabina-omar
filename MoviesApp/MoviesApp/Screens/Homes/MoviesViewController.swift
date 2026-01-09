@@ -134,7 +134,8 @@ class MoviesViewController: CustomViewController {
     }
     
     private func openDetails(movie: Movie) {
-        let detailVC = DetailBuilder.build()
+        let detailVC = DetailBuilder.build(movieId: movie.id)
+        detailVC.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(detailVC, animated: true)
     }
     
@@ -211,7 +212,7 @@ extension MoviesViewController: UICollectionViewDelegate, UICollectionViewDataSo
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch collectionView.tag {
-        case 0: =
+        case 0: 
             return viewModel.trendingMovies.count
         case 1:
             return viewModel.filterCategories.count

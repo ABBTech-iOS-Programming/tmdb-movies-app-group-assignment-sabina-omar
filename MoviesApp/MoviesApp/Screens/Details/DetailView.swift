@@ -92,11 +92,7 @@ final class DetailView: UIView {
         return stackView
     }()
     
-    let indicatorView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(named: "indicatorView")
-        return view
-    }()
+    let indicatorView = AppIndicatorView()
     
     let contentStackView: UIStackView = {
         let stackView = UIStackView()

@@ -11,12 +11,14 @@ import SnapKit
 final class CategoriesMovieViewCell: UICollectionViewCell {
     static let reuseIdentifier = String(describing: CategoriesMovieViewCell.self)
     
-    let categoryLabel: UILabel = {
+    private let categoryLabel: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 14, weight: .medium)
         return label
     }()
+    
+    private let indicatorView = AppIndicatorView()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -40,12 +42,23 @@ final class CategoriesMovieViewCell: UICollectionViewCell {
 
     private func setupConstraints() {
         categoryLabel.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(8)
+            make.top.equalToSuperview().offset(4)
+            make.leading.trailing.equalToSuperview().inset(8)
         }
+        
+        indicatorView.snp.makeConstraints { make in
+            make.top.equalTo(categoryLabel.snp.bottom).offset(6)
+            make.centerX.equalToSuperview()
+            make.width.equalTo(categoryLabel.snp.width)
+            make.height.equalTo(4)
+            make.bottom.equalToSuperview().offset(-4) 
+        }
+        indicatorView.isHidden = true
     }
 
     private func setupSubview() {
         contentView.addSubview(categoryLabel)
+        contentView.addSubview(indicatorView)
     }
     
     override func prepareForReuse() {
@@ -55,8 +68,12 @@ final class CategoriesMovieViewCell: UICollectionViewCell {
     
     override var isSelected: Bool {
         didSet {
-            contentView.backgroundColor = isSelected ? .systemBlue : .white
-            categoryLabel.textColor = isSelected ? .unselectedTabBar : .black
+            categoryLabel.textColor = isSelected ? .white : .lightGray
+            indicatorView.isHidden = !isSelected
+            
+            UIView.animate(withDuration: 0.2) {
+                self.layoutIfNeeded()
+            }
         }
-    }
+        }
 }
