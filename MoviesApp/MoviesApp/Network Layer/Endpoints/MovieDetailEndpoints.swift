@@ -11,6 +11,7 @@ import Foundation
 enum MovieDetailEndpoints {
     case detail(id: Int)
     case reviews(id: Int)
+    case cast(id: Int)
 }
 
 extension MovieDetailEndpoints: Endpoint {
@@ -20,6 +21,7 @@ extension MovieDetailEndpoints: Endpoint {
         switch self {
         case .detail(let id): return "/3/movie/\(id)"
         case .reviews(let id): return "/3/movie/\(id)/reviews"
+        case .cast(let id): return "/3/movie/\(id)/credits" 
         }
     }
 
