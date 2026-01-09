@@ -69,7 +69,7 @@ final class CategoriesMovieViewCell: UICollectionViewCell {
     override var isSelected: Bool {
         didSet {
             categoryLabel.textColor = isSelected ? .white : .lightGray
-            indicatorView.isHidden = !isSelected
+            indicatorView.isHidden = true
             
             UIView.animate(withDuration: 0.2) {
                 self.layoutIfNeeded()
