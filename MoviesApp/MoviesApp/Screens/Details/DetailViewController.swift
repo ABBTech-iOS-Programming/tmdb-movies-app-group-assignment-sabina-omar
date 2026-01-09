@@ -2,14 +2,6 @@
 //  DetailViewController.swift
 //  MoviesApp
 //
-//  Created by SabinaKarimli on 09.01.26.
-//
-
-
-//
-//  DetailViewController.swift
-//  MoviesApp
-//
 //  Created by SabinaKarimli on 04.01.26.
 //
 
