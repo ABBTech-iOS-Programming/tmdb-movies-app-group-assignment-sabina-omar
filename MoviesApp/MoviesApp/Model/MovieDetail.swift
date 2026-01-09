@@ -32,3 +32,17 @@ struct Genre: Decodable {
     let id: Int
     let name: String
 }
+
+struct CreditsResponse: Decodable {
+    let cast: [Cast]
+}
+
+struct Cast: Decodable {
+    let name: String
+    let profilePath: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case name
+        case profilePath = "profile_path"
+    }
+}

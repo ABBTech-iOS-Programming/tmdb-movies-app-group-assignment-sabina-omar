@@ -16,10 +16,14 @@ struct Review: Decodable {
     let id: String
     let author: String
     let content: String
-    let createdAt: String
-
+    let authorDetails: AuthorDetails 
+    
     enum CodingKeys: String, CodingKey {
         case id, author, content
-        case createdAt = "created_at"
+        case authorDetails = "author_details"
     }
+}
+
+struct AuthorDetails: Decodable {
+    let rating: Double?
 }
