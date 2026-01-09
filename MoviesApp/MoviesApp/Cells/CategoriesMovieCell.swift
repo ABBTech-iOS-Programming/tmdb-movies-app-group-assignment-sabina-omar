@@ -56,7 +56,7 @@ final class CategoriesMovieViewCell: UICollectionViewCell {
     override var isSelected: Bool {
         didSet {
             contentView.backgroundColor = isSelected ? .systemBlue : .white
-            categoryLabel.textColor = isSelected ? .white : .black
+            categoryLabel.textColor = isSelected ? .unselectedTabBar : .black
         }
     }
 }
