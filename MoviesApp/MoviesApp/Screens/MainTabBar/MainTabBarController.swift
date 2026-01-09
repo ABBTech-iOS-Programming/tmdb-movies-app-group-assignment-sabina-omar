@@ -16,7 +16,7 @@ class MainTabBarController: UITabBarController {
     }
     
     private func setupBar() {
-        let homeVC = MoviesViewController()
+        let homeVC = MoviesBuilder.build()
         let searchVC = SearchViewController()
         let watchListVC = WatchlistViewController()
         let homeNavBar = UINavigationController(rootViewController: homeVC)

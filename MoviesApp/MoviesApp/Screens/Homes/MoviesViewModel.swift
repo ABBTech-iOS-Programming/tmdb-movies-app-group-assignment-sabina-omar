@@ -7,84 +7,91 @@
 
 import Foundation
 
-protocol MoviesViewModelProtocol {
-    
-    var trending: [Movie] { get }
-    var movies: [Movie] { get }
-    
-    var onUpdate: (() -> Void)? { get set }
-    
-    func loadInitialData()
-    func selectCategory(_ category: MovieCategory)
-}
-
-final class MoviesViewModel: MoviesViewModelProtocol {
-
+final class MoviesViewModel {
     private let networkService: NetworkService
     
-    var trending: [Movie] = []
-    var movies: [Movie] = []
+    var trendingMovies: [Movie] = []
+    var categoryMovies: [Movie] = []
+    var currentCategory: MovieCategory = .nowPlaying
+    let filterCategories = MovieCategory.filterCategories
+    
+    var onTrendingMoviesUpdated: () -> Void = {}
+    var onCategoryMoviesUpdated: () -> Void = {}
+    var onError: (String) -> Void = { _ in }
 
-    var onUpdate: (() -> Void)?
-
+    
     init(networkService: NetworkService) {
         self.networkService = networkService
     }
-
-    func loadInitialData() {
-        fetchTrending()
-        selectCategory(.nowPlaying)
-    }
-    
-    func selectCategory(_ category: MovieCategory) {
-        let endpoint: MoviesEndpoints
-
-        switch category {
-        case .nowPlaying:
-            endpoint = .nowPlaying
-        case .popular:
-            endpoint = .popular
-        case .upcoming:
-            endpoint = .upcoming
-        case .topRated:
-            endpoint = .topRated
-        }
-        
-        fetchMovies(endpoint: endpoint)
-    }
-
-    // MARK: - Private Methods
-    
-    private func fetchTrending() {
-        networkService.request(MoviesEndpoints.trending) { [weak self]
-            (result: Result<MovieResponse, NetworkError>) in
+    func fetchMovies(_ category: MovieCategory) {
+        networkService.request(category.endpoint) {
+            [weak self] (result: Result<MovieResponse, NetworkError>) in
+            
             guard let self else { return }
-
-            if case let .success(response) = result {
-                self.trending = response.results
-                self.onUpdate?()
-            }
-        }
-    }
-    
-    private func fetchMovies(endpoint: MoviesEndpoints) {
-        networkService.request(endpoint) { [weak self]
-            (result: Result<MovieResponse, NetworkError>) in
-            guard let self else { return }
-
+            
             switch result {
             case .success(let response):
-                self.movies = response.results
-                self.onUpdate?()
-
+                DispatchQueue.main.async {
+                    if category == .trending {
+                        self.trendingMovies = response.results
+                        self.onTrendingMoviesUpdated()
+                    } else {
+                        self.currentCategory = category
+                        self.categoryMovies = response.results
+                        self.onCategoryMoviesUpdated()
+                    }
+                }
             case .failure(let error):
-                print("Movies error:", error)
+                DispatchQueue.main.async {
+                    let errorMessage = "Failed to fetch \(category.title) movies: \(error.localizedDescription)"
+                    print("Movie Not Found", errorMessage)
+                    self.onError(errorMessage)
+                }
             }
         }
+    }
+    
+    func fetchTrendingMovies() {
+        fetchMovies(.trending)
     }
 }
 
 enum MovieCategory: CaseIterable {
-    case nowPlaying, upcoming, topRated, popular
+    case trending, nowPlaying, upcoming, topRated, popular
+    
+    var endpoint: MoviesEndpoints {
+            switch self {
+            case .trending:
+                return .trending
+            case .nowPlaying:
+                return .nowPlaying
+            case .popular:
+                return .popular
+            case .upcoming:
+                return .upcoming
+            case .topRated:
+                return .topRated
+            }
+        }
+    
+    var title: String {
+            switch self {
+            case .trending:
+                return "Trending"
+            case .nowPlaying:
+                return "Now Playing"
+            case .popular:
+                return "Popular"
+            case .upcoming:
+                return "Upcoming"
+            case .topRated:
+                return "Top Rated"
+            }
+        }
+    
+    static var filterCategories: [MovieCategory] {
+          [.nowPlaying, .popular, .upcoming, .topRated]
+      }
 }
 
+
