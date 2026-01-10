@@ -47,12 +47,12 @@ extension DetailViewController {
         
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor(named: "backgroundColor")
+        appearance.backgroundColor = UIColor(named: "background")
         appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
         
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
-        navigationController?.navigationBar.tintColor = .white
+        navigationController?.navigationBar.tintColor = .background
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "bookmark"),
