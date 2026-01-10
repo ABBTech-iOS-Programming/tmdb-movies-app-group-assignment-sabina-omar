@@ -37,22 +37,11 @@ final class DetailViewController: CustomViewController {
     }
 }
 
-        // Do any extension setup after loading the view.
-
 // MARK: - UI Setup (Navigation & Tabs)
 extension DetailViewController {
     
-    private func setupNavBar() {
-        title = "Detail"
-        
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor(named: "background")
-        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
-        
-        navigationController?.navigationBar.standardAppearance = appearance
-        navigationController?.navigationBar.scrollEdgeAppearance = appearance
-        navigationController?.navigationBar.tintColor = .white
+    private func setupNavBar() {        
+        UIHelper.configureNavigationBar(for: self, title: "Detail", showBackButton: false)
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "bookmark"),
@@ -64,7 +53,6 @@ extension DetailViewController {
     
     private func setupTabs() {
         let titles = ["About Movie", "Reviews"]
-        
         for (index, title) in titles.enumerated() {
             let button = UIButton(type: .system)
             button.setTitle(title, for: .normal)
@@ -79,18 +67,36 @@ extension DetailViewController {
     }
 }
 
-
 // MARK: - ViewModel Binding & Actions
 extension DetailViewController {
     
     private func bindViewModel() {
         viewModel?.didUpdateDetail = { [weak self] detail in
-            DispatchQueue.main.async { self?.detailView.configureUI(with: detail) }
+            DispatchQueue.main.async {
+                self?.detailView.configureUI(with: detail)
+                self?.updateBookmarkIcon()
+            }
         }
         
         viewModel?.didUpdateReviews = { [weak self] in
             DispatchQueue.main.async { self?.detailView.reviewsTableView.reloadData() }
         }
+    }
+    
+    @objc private func bookmarkTapped() {
+        guard let movie = viewModel?.movieDetail else { return }
+        
+        LocalManager.shared.toggleWatchlist(movie: movie)
+        
+        updateBookmarkIcon()
+    }
+    
+    private func updateBookmarkIcon() {
+        guard let movieId = viewModel?.movieDetail?.id else { return }
+        let isSaved = LocalManager.shared.isSaved(movieId: movieId)
+        
+        let iconName = isSaved ? "bookmark.fill" : "bookmark"
+        navigationItem.rightBarButtonItem?.image = UIImage(systemName: iconName)
     }
     
     @objc private func tabTapped(_ sender: UIButton) {
@@ -113,12 +119,7 @@ extension DetailViewController {
             viewModel?.fetchReviews()
         }
     }
-    
-    @objc private func bookmarkTapped() {
-        
-    }
 }
-
 
 // MARK: - TableView DataSource & Delegate
 extension DetailViewController: UITableViewDataSource, UITableViewDelegate {
@@ -140,4 +141,3 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
 }
-
