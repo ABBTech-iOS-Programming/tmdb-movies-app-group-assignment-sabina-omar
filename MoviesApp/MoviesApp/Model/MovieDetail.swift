@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct MovieDetail: Decodable {
+struct MovieDetail: Codable {
     let id: Int
     let title: String
     let overview: String
@@ -28,16 +28,16 @@ struct MovieDetail: Decodable {
     }
 }
 
-struct Genre: Decodable {
+struct Genre: Codable {
     let id: Int
     let name: String
 }
 
-struct CreditsResponse: Decodable {
+struct CreditsResponse: Codable {
     let cast: [Cast]
 }
 
-struct Cast: Decodable {
+struct Cast: Codable {
     let name: String
     let profilePath: String?
     

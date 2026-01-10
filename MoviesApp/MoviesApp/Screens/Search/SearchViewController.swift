@@ -58,6 +58,7 @@ class SearchViewController: CustomViewController {
     }
     
     private func setupUI() {
+        UIHelper.configureNavigationBar(for: self, title: "Seacrh", showBackButton: true)
         addSubview()
         setupConstraints()
         emptyStateView.configure(

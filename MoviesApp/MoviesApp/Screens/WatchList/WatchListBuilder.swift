@@ -4,7 +4,14 @@
 //
 //  Created by SabinaKarimli on 04.01.26.
 //
+ 
+import UIKit
 
-class WatchListBuilder {
-    
+final class WatchListBuilder {
+    static func build() -> WatchListViewController {
+        let viewModel = WatchListViewModel()
+        let viewController = WatchListViewController(viewModel: viewModel)
+        
+        return viewController
+    }
 }
