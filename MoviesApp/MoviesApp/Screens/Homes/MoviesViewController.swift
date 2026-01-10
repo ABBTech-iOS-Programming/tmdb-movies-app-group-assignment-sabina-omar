@@ -29,32 +29,34 @@ class MoviesViewController: CustomViewController {
     private let searchBar: UIButton = {
         let search = UIButton()
         var config = UIButton.Configuration.plain()
-        config.title = "Search"
+            
         config.attributedTitle = AttributedString(
-            "Search",
-            attributes: AttributeContainer([
-                .foregroundColor: UIColor.white.withAlphaComponent(0.5),
-                .font: UIFont.systemFont(ofSize: 16)
-            ])
-        )
+        
+        "Search",
+        attributes: AttributeContainer([
+                
+        .foregroundColor:
+        UIColor.white.withAlphaComponent(0.5),
+        .font: UIFont.systemFont(ofSize: 16)]))
         config.image = UIImage(systemName: "magnifyingglass")
         config.imagePlacement = .trailing
-        config.imagePadding = 8
+            
         config.contentInsets = NSDirectionalEdgeInsets(
-                    top: 12,
-                    leading: 16,
-                    bottom: 12,
-                    trailing: 16
-                )
+            top: 12,
+            leading: 16,
+            bottom: 12,
+            trailing: 16
+        )
         search.configuration = config
-        search.backgroundColor =  UIColor.white.withAlphaComponent(0.12)
+        search.backgroundColor =
+        UIColor.white.withAlphaComponent(0.12)
         search.layer.cornerRadius = 16
-        search.tintColor = UIColor.white.withAlphaComponent(0.6)
-        search.layer.borderColor = .none
-        search.contentHorizontalAlignment = .trailing
+        search.tintColor =
+        UIColor.white.withAlphaComponent(0.6)
+        search.contentHorizontalAlignment = .fill
+            
         return search
-    }()
-    
+        }()
     private let trendingMoviesLabel: UILabel = {
         let label = UILabel()
         label.text = "Trending"
@@ -171,10 +173,16 @@ class MoviesViewController: CustomViewController {
     }
     
     @objc func searchbarTapped() {
-        let VC = SearchBuilder.build()
-        
-        navigationController?.pushViewController(VC, animated: true)
-    }
+            guard let tabBarController = self.tabBarController else { return }
+            
+            let searchTabIndex = 1
+            
+            tabBarController.selectedIndex = searchTabIndex
+            
+            if let navVC = tabBarController.viewControllers?[searchTabIndex] as? UINavigationController {
+                navVC.popToRootViewController(animated: false)
+            }
+        }
     
     private func bindViewModel() {
         viewModel.onTrendingMoviesUpdated = { [weak self] in
