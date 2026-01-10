@@ -171,7 +171,7 @@ class MoviesViewController: CustomViewController {
     }
     
     @objc func searchbarTapped() {
-        let VC = SearchViewController()
+        let VC = SearchBuilder.build()
         
         navigationController?.pushViewController(VC, animated: true)
     }

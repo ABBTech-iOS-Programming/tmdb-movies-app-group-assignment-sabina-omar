@@ -35,10 +35,11 @@ extension MoviesEndpoints: Endpoint {
     }
     
     var queryItems: [URLQueryItem]? {
-        
-       [ URLQueryItem(name: "language", value: "en-US"),
-        URLQueryItem(name: "page", value: "1")]
-        
+        [
+            URLQueryItem(name: "language", value: "en-US"),
+            URLQueryItem(name: "page", value: "1")
+        ]
+
     }
     var httpBody: Encodable? { nil }
 }

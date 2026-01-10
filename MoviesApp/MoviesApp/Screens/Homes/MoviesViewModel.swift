@@ -18,6 +18,8 @@ final class MoviesViewModel {
     var onTrendingMoviesUpdated: () -> Void = {}
     var onCategoryMoviesUpdated: () -> Void = {}
     var onError: (String) -> Void = { _ in }
+    private(set) var searchResults: [Movie] = []
+    var onSearchResultsUpdated: (() -> Void)?
 
     
     init(networkService: NetworkService) {
