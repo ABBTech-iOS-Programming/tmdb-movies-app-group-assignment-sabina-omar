@@ -21,7 +21,7 @@ final class EmptyStateView: UIView {
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 20, weight: .semibold)
+        label.font = UIFont(name: "Montserrat-SemiBold", size: 16)
         label.textColor = .white
         label.textAlignment = .center
         label.numberOfLines = 0
@@ -30,8 +30,8 @@ final class EmptyStateView: UIView {
 
     private let subtitleLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14)
-        label.textColor = UIColor.white.withAlphaComponent(0.6)
+        label.font = UIFont(name: "Montserrat-Medium", size: 12)
+        label.textColor = UIColor(named: "infoStack")
         label.textAlignment = .center
         label.numberOfLines = 0
         return label

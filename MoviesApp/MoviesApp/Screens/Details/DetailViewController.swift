@@ -52,7 +52,7 @@ extension DetailViewController {
         
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
-        navigationController?.navigationBar.tintColor = .background
+        navigationController?.navigationBar.tintColor = .white
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "bookmark"),
