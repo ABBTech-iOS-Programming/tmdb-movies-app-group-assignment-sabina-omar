@@ -39,9 +39,18 @@ class SearchViewController: CustomViewController {
         return search
     }()
     
+    private let tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.backgroundColor = .clear
+        tableView.separatorStyle = .none
+        tableView.register(MovieCell.self, forCellReuseIdentifier: MovieCell.identifier)
+        return tableView
+    }()
+    
     private func addSubview() {
         view.addSubview(searchBar)
         view.addSubview(emptyStateView)
+        view.addSubview(tableView)
     }
     
     private func setupConstraints() {
@@ -58,7 +67,7 @@ class SearchViewController: CustomViewController {
     }
     
     private func setupUI() {
-        UIHelper.configureNavigationBar(for: self, title: "Seacrh", showBackButton: true)
+        UIHelper.configureNavigationBar(for: self, title: "Search", showBackButton: true)
         addSubview()
         setupConstraints()
         emptyStateView.configure(
@@ -66,13 +75,25 @@ class SearchViewController: CustomViewController {
             title: "We Are Sorry, We Can Not Find The Movie :(",
             subtitle: "Find your movie by type title, categories, years, etc"
         )
+        
+        tableView.dataSource = self
+        tableView.delegate = self
+        
+   
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(searchBar.snp.bottom).offset(12)
+            make.horizontalEdges.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
+        }
+        
         emptyStateView.isHidden = false
+        tableView.isHidden = true
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        bindViewModel()
+        bindViewModel() // UPDATED: remove duplicate call
         searchBar.delegate = self
     }
     
@@ -86,17 +107,74 @@ class SearchViewController: CustomViewController {
     }
     
     private func bindViewModel() {
-        
+        viewModel.onResultsUpdated = { [weak self] in
+            guard let self = self else { return }
+
+            DispatchQueue.main.async {
+                let hasResults = !self.viewModel.movies.isEmpty
+
+                self.tableView.isHidden = !hasResults
+                self.emptyStateView.isHidden = hasResults
+
+                self.tableView.reloadData()
+            }
+        }
+
+        viewModel.onError = { [weak self] _ in
+            DispatchQueue.main.async {
+                self?.tableView.isHidden = true
+                self?.emptyStateView.isHidden = false
+            }
+        }
     }
+    
 }
 
 extension SearchViewController: UISearchBarDelegate {
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-           viewModel.searchMovies(query: searchText)
-       }
 
-       func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-           searchBar.resignFirstResponder()
-       }
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+       
+        let trimmed = searchText.trimmingCharacters(in: .whitespaces)
+        if trimmed.isEmpty {
+            viewModel.searchMovies(query: "")
+            tableView.isHidden = true
+            emptyStateView.isHidden = false
+            return
+        }
+
+        viewModel.searchMovies(query: trimmed)
+    }
 }
+
+extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return viewModel.numberOfItems
+    }
+    
+    func tableView(
+            _ tableView: UITableView,
+            cellForRowAt indexPath: IndexPath
+        ) -> UITableViewCell {
+
+            let cell = tableView.dequeueReusableCell(
+                withIdentifier: MovieCell.identifier,
+                for: indexPath
+            ) as! MovieCell
+
+            let movie = viewModel.movie(at: indexPath.row)
+            cell.configure(with: movie)
+            return cell
+        }
+    
+   
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let movie = viewModel.movie(at: indexPath.row)
+    
+        let detailVC = DetailBuilder.build(movieId: movie.id)
+        detailVC.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+}
+

@@ -34,14 +34,38 @@ final class MovieCell: UITableViewCell {
         }
     }
 
-    func configure(with movie: MovieDetail) {
+    func configure(with movie: Movie) {
+        // Movie does not have runtime or genres, so provide sensible fallbacks
         movieHeader.configure(
             title: movie.title,
             year: String(movie.releaseDate?.prefix(4) ?? ""),
-            duration: "\(movie.runtime ?? 0) minutes",
-            genre: movie.genres.first?.name ?? "N/A",
+            duration: "_",
+            genre: "_",
+            rating: movie.voteAverage,
+            posterPath: movie.posterPath
+        )
+    }
+    
+    func configure(with movie: MovieDetail) {
+        let durationText: String
+        if let runtime = movie.runtime, runtime > 0 {
+            let hours = runtime / 60
+            let minutes = runtime % 60
+            durationText = hours > 0 ? "\(hours)h \(minutes)m" : "\(minutes)m"
+        } else {
+            durationText = "_"
+        }
+        
+        let genreText = movie.genres.first?.name ?? "_"
+        
+        movieHeader.configure(
+            title: movie.title,
+            year: String(movie.releaseDate?.prefix(4) ?? ""),
+            duration: durationText,
+            genre: genreText,
             rating: movie.voteAverage,
             posterPath: movie.posterPath
         )
     }
 }
+
