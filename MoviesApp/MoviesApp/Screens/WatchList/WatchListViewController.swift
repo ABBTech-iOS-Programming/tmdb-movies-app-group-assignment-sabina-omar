@@ -11,18 +11,8 @@ import SnapKit
 final class WatchListViewController: CustomViewController {
     
     var viewModel: WatchListViewModel
-    
-    init(viewModel: WatchListViewModel) {
-        self.viewModel = viewModel
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    @MainActor required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    
     private let emptyStateView = EmptyStateView()
+    private let loader = UIActivityIndicatorView(style: .large)
     
     private let tableView: UITableView = {
         let tableView = UITableView()
@@ -32,6 +22,15 @@ final class WatchListViewController: CustomViewController {
         return tableView
     }()
     
+    init(viewModel: WatchListViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -40,12 +39,16 @@ final class WatchListViewController: CustomViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        tableView.isHidden = true
+        emptyStateView.isHidden = true
+        loader.startAnimating()
         viewModel.loadData()
     }
     
     private func bindViewModel() {
         viewModel.onDataUpdated = { [weak self] isEmpty in
             DispatchQueue.main.async {
+                self?.loader.stopAnimating()
                 self?.emptyStateView.isHidden = !isEmpty
                 self?.tableView.isHidden = isEmpty
                 self?.tableView.reloadData()
@@ -54,15 +57,22 @@ final class WatchListViewController: CustomViewController {
     }
     
     private func setupUI() {
-        UIHelper.configureNavigationBar(for: self, title: "Watch list", showBackButton: true)
+        UIHelper.configureNavigationBar(for: self, title: "Watch list", showBackButton: false)
         view.addSubview(tableView)
         view.addSubview(emptyStateView)
+        view.addSubview(loader)
+        
+        loader.color = .white
         
         tableView.dataSource = self
         tableView.delegate = self
         
         tableView.snp.makeConstraints { make in
             make.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        loader.snp.makeConstraints { make in
+            make.center.equalToSuperview()
         }
         
         emptyStateView.configure(
@@ -78,7 +88,6 @@ final class WatchListViewController: CustomViewController {
     }
 }
 
-// MARK: - TableView Methods
 extension WatchListViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

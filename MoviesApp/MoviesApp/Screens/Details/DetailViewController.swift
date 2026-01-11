@@ -12,6 +12,7 @@ import SnapKit
 final class DetailViewController: CustomViewController {
     
     private var selectedTabIndex: Int = 0
+    private var isMovieSaved: Bool = false
     var viewModel: DetailViewModelProtocol?
     private let detailView = DetailView()
     
@@ -37,18 +38,18 @@ final class DetailViewController: CustomViewController {
     }
 }
 
-// MARK: - UI Setup (Navigation & Tabs)
 extension DetailViewController {
     
-    private func setupNavBar() {        
-        UIHelper.configureNavigationBar(for: self, title: "Detail", showBackButton: false)
+    private func setupNavBar() {
+        UIHelper.configureNavigationBar(for: self, title: "Detail", showBackButton: true)
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
+        let bookmarkItem = UIBarButtonItem(
             image: UIImage(systemName: "bookmark"),
             style: .plain,
             target: self,
             action: #selector(bookmarkTapped)
         )
+        navigationItem.rightBarButtonItem = bookmarkItem
     }
     
     private func setupTabs() {
@@ -67,36 +68,30 @@ extension DetailViewController {
     }
 }
 
-// MARK: - ViewModel Binding & Actions
 extension DetailViewController {
     
     private func bindViewModel() {
         viewModel?.didUpdateDetail = { [weak self] detail in
             DispatchQueue.main.async {
                 self?.detailView.configureUI(with: detail)
-                self?.updateBookmarkIcon()
             }
         }
         
         viewModel?.didUpdateReviews = { [weak self] in
             DispatchQueue.main.async { self?.detailView.reviewsTableView.reloadData() }
         }
+        
+        viewModel?.didUpdateWatchlistStatus = { [weak self] isAdded in
+            DispatchQueue.main.async {
+                self?.isMovieSaved = isAdded
+                let iconName = isAdded ? "bookmark.fill" : "bookmark"
+                self?.navigationItem.rightBarButtonItem?.image = UIImage(systemName: iconName)
+            }
+        }
     }
     
     @objc private func bookmarkTapped() {
-        guard let movie = viewModel?.movieDetail else { return }
-        
-        LocalManager.shared.toggleWatchlist(movie: movie)
-        
-        updateBookmarkIcon()
-    }
-    
-    private func updateBookmarkIcon() {
-        guard let movieId = viewModel?.movieDetail?.id else { return }
-        let isSaved = LocalManager.shared.isSaved(movieId: movieId)
-        
-        let iconName = isSaved ? "bookmark.fill" : "bookmark"
-        navigationItem.rightBarButtonItem?.image = UIImage(systemName: iconName)
+        viewModel?.toggleWatchlist(isAdding: !isMovieSaved)
     }
     
     @objc private func tabTapped(_ sender: UIButton) {
@@ -121,7 +116,6 @@ extension DetailViewController {
     }
 }
 
-// MARK: - TableView DataSource & Delegate
 extension DetailViewController: UITableViewDataSource, UITableViewDelegate {
     
     private func setupDelegates() {

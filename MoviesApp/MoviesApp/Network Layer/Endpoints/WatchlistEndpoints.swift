@@ -10,7 +10,7 @@ import Foundation
 
 enum WatchlistEndpoints {
     case getWatchlist(accountId: Int)
-    case addToWatchlist(accountId: Int, movieId: Int)
+    case updateWatchlist(accountId: Int, movieId: Int, isAdding: Bool)
 }
 
 extension WatchlistEndpoints: Endpoint {
@@ -20,7 +20,7 @@ extension WatchlistEndpoints: Endpoint {
         switch self {
         case .getWatchlist(let accountId):
             return "/3/account/\(accountId)/watchlist/movies"
-        case .addToWatchlist(let accountId, _):
+        case .updateWatchlist(let accountId, _, _):
             return "/3/account/\(accountId)/watchlist"
         }
     }
@@ -28,7 +28,7 @@ extension WatchlistEndpoints: Endpoint {
     var method: HttpMethod {
         switch self {
         case .getWatchlist: return .get
-        case .addToWatchlist: return .post
+        case .updateWatchlist: return .post
         }
     }
 
@@ -44,8 +44,8 @@ extension WatchlistEndpoints: Endpoint {
 
     var httpBody: Encodable? {
         switch self {
-        case .addToWatchlist(_, let movieId):
-            return AddToWatchlistBody(media_type: "movie", media_id: movieId, watchlist: true)
+        case .updateWatchlist(_, let movieId, let isAdding):
+            return AddToWatchlistBody(media_type: "movie", media_id: movieId, watchlist: isAdding)
         default:
             return nil
         }

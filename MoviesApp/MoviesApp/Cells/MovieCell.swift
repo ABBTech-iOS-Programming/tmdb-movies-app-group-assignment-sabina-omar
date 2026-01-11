@@ -23,7 +23,6 @@ final class MovieCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-
     private func setupUI() {
         backgroundColor = .clear
         contentView.addSubview(movieHeader)
@@ -35,12 +34,13 @@ final class MovieCell: UITableViewCell {
     }
 
     func configure(with movie: Movie) {
-        // Movie does not have runtime or genres, so provide sensible fallbacks
+        let yearText = String(movie.releaseDate?.prefix(4) ?? "N/A")
+        
         movieHeader.configure(
             title: movie.title,
-            year: String(movie.releaseDate?.prefix(4) ?? ""),
-            duration: "_",
-            genre: "_",
+            year: yearText,
+            duration: "Movie",
+            genre: "Action",
             rating: movie.voteAverage,
             posterPath: movie.posterPath
         )
@@ -49,18 +49,17 @@ final class MovieCell: UITableViewCell {
     func configure(with movie: MovieDetail) {
         let durationText: String
         if let runtime = movie.runtime, runtime > 0 {
-            let hours = runtime / 60
-            let minutes = runtime % 60
-            durationText = hours > 0 ? "\(hours)h \(minutes)m" : "\(minutes)m"
+            durationText = "\(runtime) Minutes"
         } else {
-            durationText = "_"
+            durationText = "N/A"
         }
         
-        let genreText = movie.genres.first?.name ?? "_"
+        let genreText = movie.genres.first?.name ?? "N/A"
+        let yearText = String(movie.releaseDate?.prefix(4) ?? "N/A")
         
         movieHeader.configure(
             title: movie.title,
-            year: String(movie.releaseDate?.prefix(4) ?? ""),
+            year: yearText,
             duration: durationText,
             genre: genreText,
             rating: movie.voteAverage,
@@ -68,4 +67,3 @@ final class MovieCell: UITableViewCell {
         )
     }
 }
-

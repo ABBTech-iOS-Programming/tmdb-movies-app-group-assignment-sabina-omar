@@ -28,7 +28,7 @@ struct UIHelper {
                 image: UIImage(systemName: "chevron.left"),
                 style: .plain,
                 target: controller,
-                action: #selector(controller.backToHomeAction)
+                action: #selector(controller.handleBackAction)
             )
             controller.navigationItem.leftBarButtonItem = backButton
         }
@@ -36,7 +36,11 @@ struct UIHelper {
 }
 
 extension UIViewController {
-    @objc func backToHomeAction() {
-        self.tabBarController?.selectedIndex = 0
+    @objc func handleBackAction() {
+        if let nav = self.navigationController, nav.viewControllers.count > 1 {
+            nav.popViewController(animated: true)
+        } else {
+            self.dismiss(animated: true)
+        }
     }
 }

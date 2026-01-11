@@ -164,6 +164,7 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate {
 
             let movie = viewModel.movie(at: indexPath.row)
             cell.configure(with: movie)
+            cell.selectionStyle = .none
             return cell
         }
     

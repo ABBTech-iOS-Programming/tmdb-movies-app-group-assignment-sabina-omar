@@ -9,23 +9,52 @@
 import Foundation
 
 final class WatchListViewModel {
-    private(set) var watchlistMovies: [MovieDetail] = []
+    private let networkService: NetworkService
+    private(set) var watchlistMovies: [Movie] = []
     
     var onDataUpdated: ((Bool) -> Void)?
     
+    init(networkService: NetworkService = DefaultNetworkService()) {
+        self.networkService = networkService
+    }
+    
     func loadData() {
-        watchlistMovies = LocalManager.shared.getWatchlist()
-        onDataUpdated?(watchlistMovies.isEmpty)
+        networkService.request(WatchlistEndpoints.getWatchlist(accountId: Constants.accountID)) { [weak self] (result: Result<MovieResponse, NetworkError>) in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let response):
+                    self?.watchlistMovies = response.results
+                    self?.onDataUpdated?(self?.watchlistMovies.isEmpty ?? true)
+                case .failure:
+                    self?.watchlistMovies = []
+                    self?.onDataUpdated?(true)
+                }
+            }
+        }
     }
     
     func removeFromWatchlist(at index: Int) {
         let movie = watchlistMovies[index]
-        LocalManager.shared.toggleWatchlist(movie: movie)
-        watchlistMovies.remove(at: index)
-        onDataUpdated?(watchlistMovies.isEmpty)
+        let endpoint = WatchlistEndpoints.updateWatchlist(
+            accountId: Constants.accountID,
+            movieId: movie.id,
+            isAdding: false
+        )
+        
+        networkService.request(endpoint) { [weak self] (result: Result<GeneralResponse, NetworkError>) in
+            DispatchQueue.main.async {
+                switch result {
+                case .success:
+                    self?.watchlistMovies.remove(at: index)
+                    self?.onDataUpdated?(self?.watchlistMovies.isEmpty ?? true)
+                case .failure(let error):
+                    print("Failed to remove: \(error.localizedDescription)")
+                }
+            }
+        }
     }
     
-    func movie(at index: Int) -> MovieDetail {
+    func movie(at index: Int) -> Movie {
         return watchlistMovies[index]
     }
     
